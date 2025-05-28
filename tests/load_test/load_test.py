@@ -64,7 +64,6 @@ hello this is an introduction placeholder!
 1. feature 3
 ?! block-two end
 ?! block-one end"""
-        raise NotImplementedError("do parser")
 
         data = {
             "input": {
