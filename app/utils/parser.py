@@ -121,7 +121,7 @@ class Document:
                 words.pop(0)  # name
                 words.pop(0)  # access
                 word = words.pop(0)  # prompt start
-                assert word.startswith('"')
+                assert word.startswith(Token.QUOTE)
                 while words:  # prompt end
                     word, sep, tail = word.partition("\n")
                     if tail:
