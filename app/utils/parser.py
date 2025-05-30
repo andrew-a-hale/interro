@@ -27,6 +27,9 @@ class Token(enum.StrEnum):
     END = "!end"
     ESCAPE = "\\"
     QUOTE = '"'
+    NEWLINE = '\n'
+    SPACE = ' '
+    EMPTY_STRING = ''
 
 
 @dataclasses.dataclass
@@ -105,10 +108,10 @@ class Document:
 
     def render(self) -> str:
         parsed = ""
-        words = self.text.split(" ")
+        words = self.text.split(Token.SPACE)
         while words:
             word = words.pop(0)
-            word, sep, tail = word.partition("\n")
+            word, sep, tail = word.partition(Token.NEWLINE)
             if tail:
                 words.insert(0, tail)
 
@@ -123,15 +126,15 @@ class Document:
                 word = words.pop(0)  # prompt start
                 assert word.startswith(Token.QUOTE)
                 while words:  # prompt end
-                    word, sep, tail = word.partition("\n")
+                    word, sep, tail = word.partition(Token.NEWLINE)
                     if tail:
                         words.insert(0, tail)
-                    if word.endswith('"'):
+                    if word.endswith(Token.QUOTE):
                         break
                     word = words.pop(0)
             elif word == Token.END:
                 word = words.pop(0)  # name
-                word, _, tail = word.partition("\n")
+                word, _, tail = word.partition(Token.NEWLINE)
                 if tail:
                     words.insert(0, tail)
             else:
@@ -143,12 +146,12 @@ class Document:
         blocks = []
         text = content
         while True:
-            _, sep, tail = text.partition(Token.START + " ")
-            if sep == "":
+            _, sep, tail = text.partition(Token.START + Token.SPACE)
+            if sep == Token.EMPTY_STRING:
                 break
 
-            name, _, tail = tail.partition(" ")
-            access, _, tail = tail.partition(" ")
+            name, _, tail = tail.partition(Token.SPACE)
+            access, _, tail = tail.partition(Token.SPACE)
             assert access in [
                 Token.READ_ONLY.value,
                 Token.READ_WRITE.value,
@@ -169,8 +172,8 @@ class Document:
             prompt = tail[:prompt_length]
             tail = tail[prompt_length:]
 
-            content, sep, text = tail.partition(Token.END + " " + name)
-            if sep == "":
+            content, sep, text = tail.partition(Token.END + Token.SPACE + name)
+            if sep == Token.EMPTY_STRING:
                 raise MalformedDocumentError(
                     f"block: {name} is missing an end section, expected to the `!end {name}` before EOF."
                 )

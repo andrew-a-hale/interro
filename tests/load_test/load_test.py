@@ -56,14 +56,14 @@ class ChatStreamUser(HttpUser):
         headers["Authorization"] = f"Bearer {os.environ['_AUTH_TOKEN']}"
 
         message = """\
-?! block-one "introductory block"
+!interro block-one ro "introductory block"
 hello this is an introduction placeholder!
-?! block-two "highlight features"
+!interro block-two ro "highlight features"
 1. feature 1
 1. feature 2
 1. feature 3
-?! block-two end
-?! block-one end"""
+!end block-two
+!end block-one"""
 
         data = {
             "input": {
